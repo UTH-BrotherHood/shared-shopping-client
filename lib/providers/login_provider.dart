@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../models/login_model.dart';
 
-class LoginModel with ChangeNotifier {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+class LoginProvider with ChangeNotifier {
+  final LoginModel _loginModel = LoginModel();
   bool _obscurePassword = true;
 
+  LoginModel get loginModel => _loginModel;
   bool get obscurePassword => _obscurePassword;
 
   void togglePasswordVisibility() {
@@ -25,8 +26,7 @@ class LoginModel with ChangeNotifier {
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _loginModel.dispose();
     super.dispose();
   }
 }
