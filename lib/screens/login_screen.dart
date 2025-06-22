@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../widgets/login/custom_text_field.dart';
-import '../../widgets/login/social_login_button.dart';
-import 'login_model.dart';
+
+import '../providers/login_provider.dart';
+import '../utilities/validators.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/social_login_button.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -11,7 +13,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => LoginModel(),
+      create: (_) => LoginProvider(),
       child: const LoginView(),
     );
   }
@@ -22,7 +24,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<LoginModel>(context);
+    final provider = Provider.of<LoginProvider>(context);
 
     return Scaffold(
       body: SafeArea(
@@ -44,39 +46,29 @@ class LoginView extends StatelessWidget {
                 CustomTextField(
                   hintText: 'Username or Email',
                   prefixIcon: Icons.person_outline,
-                  controller: model.emailController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username or email';
-                    }
-                    return null;
-                  },
+                  controller: provider.loginModel.emailController,
+                  validator: Validators.validateEmail,
                 ),
                 const SizedBox(height: 20),
 
                 // Password field
-                Consumer<LoginModel>(
-                  builder: (_, model, __) {
+                Consumer<LoginProvider>(
+                  builder: (_, provider, __) {
                     return CustomTextField(
                       hintText: 'Password',
                       prefixIcon: Icons.lock_outline,
-                      obscureText: model.obscurePassword,
-                      controller: model.passwordController,
+                      obscureText: provider.obscurePassword,
+                      controller: provider.loginModel.passwordController,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          model.obscurePassword
+                          provider.obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
                           color: Colors.grey[600],
                         ),
-                        onPressed: model.togglePasswordVisibility,
+                        onPressed: provider.togglePasswordVisibility,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
+                      validator: Validators.validatePassword,
                     );
                   },
                 ),
@@ -84,7 +76,7 @@ class LoginView extends StatelessWidget {
 
                 // Login button
                 ElevatedButton(
-                  onPressed: () => model.login(),
+                  onPressed: () => provider.login(),
                   child: const Text('Login', style: TextStyle(fontSize: 16)),
                 ),
                 const SizedBox(height: 40),
@@ -110,7 +102,7 @@ class LoginView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     SocialLoginButton(
-                      onPressed: () => model.loginWithGoogle(),
+                      onPressed: () => provider.loginWithGoogle(),
                       icon: const FaIcon(
                         FontAwesomeIcons.google,
                         color: Colors.red,
